@@ -1,70 +1,81 @@
-Inditex Recogida Android
-Technical documentation for the Inditex Recogida Android application. This project is a specialized industrial-grade scanning solution built on a multi-module Clean Architecture, optimized for PDA hardware and currently targeting the Spain region.
+# PROJECT SPECIFICATION: INDITEX RECOGIDA ANDROID
+**Logistics Scanning & Personnel Management Platform**
 
-1. Project Architecture
-   The application is architected into specific layers to enforce a strict unidirectional data flow and ensure that business logic remains independent of the UI or hardware implementation.
+---
 
-1.1 Module Definitions
-:app The entry point of the application. Responsible for dependency injection (Koin) initialization and hosting the global Navigation Host.
+## 01. EXECUTIVE SUMMARY
+This repository contains the core Android implementation for the Inditex Recogida platform. The system is engineered for industrial PDA hardware, utilizing a strict Clean Architecture pattern to ensure high-reliability scanning operations within the Spanish logistics network.
 
-:domain The core of the application. A pure Kotlin module containing business logic, UseCase definitions, and Repository interfaces. It has no dependencies on other modules.
+> [!IMPORTANT]
+> This project is currently configured for the **Spain** environment and requires specific PDA hardware abstractions for laser scanning and haptic feedback.
 
-:data Responsible for data orchestration. Implements Repository interfaces using Retrofit for network calls and SQLDelight for local persistence.
+---
 
-:data-core Infrastructure-level module handling hardware abstractions (PDA laser/haptics), base network configuration, and security cipher logic.
+## 02. ARCHITECTURAL BLUEPRINT
+The application is partitioned into independent modules to enforce domain isolation and unidirectional data flow.
 
-:feature-recogidas A feature-specific presentation module. Built with Jetpack Compose following the MVI (Model-View-Intent) pattern.
 
-:core-common A shared utility module containing common UI components and threading abstractions like the DispatcherProvider.
 
-:session Manages the authentication state, session lifecycles, and secure token storage.
+### MODULE MAP
+| Module | Tier | Primary Responsibility |
+| :--- | :--- | :--- |
+| **:app** | Framework | Dependency Injection (Koin) & Navigation orchestration. |
+| **:domain** | Core | Pure Kotlin Business Logic, UseCases, and Repository Contracts. |
+| **:data** | Infrastructure | SQLDelight Persistence & Retrofit API implementations. |
+| **:data-core** | Hardware | PDA Laser/Camera drivers and Haptic feedback logic. |
+| **:feature-recogidas** | UI | Jetpack Compose views following the MVI state pattern. |
+| **:session** | Auth | Secure token lifecycle and authentication state management. |
 
-2. Technical Stack
-   Language: Kotlin 2.x
+---
 
-Concurrency: Coroutines and Flow
+## 03. TECHNICAL SPECIFICATIONS
+The platform leverages a modern reactive stack optimized for low-latency hardware interactions.
 
-UI Framework: Jetpack Compose (Modern Declarative UI)
+### CORE RUNTIME
+* **Language:** Kotlin 2.x
+* **Concurrency:** Coroutines + Flow (Reactive Streams)
+* **DI Framework:** Koin (Service Locator)
+* **Build System:** Gradle KTS + Version Catalog
 
-Dependency Injection: Koin
+### DATA & NETWORKING
+* **Persistence:** SQLDelight (Type-safe SQLite)
+* **Networking:** Retrofit 2 + OkHttp 4
+* **Serialization:** GSON (Inditex API Standards)
 
-Persistence: SQLDelight (Type-safe SQL)
+### PERIPHERALS
+* **Computer Vision:** CameraX + Google MLKit
+* **Haptics:** VibratorManager (API 31+) & Legacy Vibrator support
 
-Networking: Retrofit 2 + OkHttp
+---
 
-Barcode Scanning: CameraX API + Google MLKit
+## 04. HARDWARE ABSTRACTION LAYER
+To maintain UI independence, hardware interactions are abstracted through the `:data-core` module.
 
-Build System: Gradle Kotlin DSL + Version Catalog
 
-3. Hardware Integration
-   The application is optimized for specialized PDA (Personal Digital Assistant) hardware found in logistics environments.
 
-Scanner Abstraction: The :data-core module provides an interface for both hardware laser scanning and camera-based scanning.
+* **Unified Scanning:** Provides a single entry point for both hardware laser engines and camera-based vision.
+* **Industrial Haptics:** Implements specialized vibration patterns for noisy warehouse environments, with backward compatibility for legacy PDA models.
 
-Haptic Feedback: Sophisticated vibration patterns are implemented using the VibratorManager for API 31+ and legacy Vibrator services for backward compatibility.
+---
 
-4. Testing Strategy
-   Stability is ensured through a multi-layered testing suite:
+## 05. QUALITY ASSURANCE
+A multi-tiered testing strategy ensures stability across mission-critical flows.
 
-Unit Testing: Comprehensive MockK-based testing for UseCase business rules and ViewModel state logic.
+* **Domain Logic:** Unit tests using MockK.
+* **State Verification:** Turbine for asynchronous Flow/StateFlow validation.
+* **Persistence Integrity:** In-memory testing via JdbcSqliteDriver.
+* **Component Testing:** Isolated UI validation using ComposeTestRule.
 
-Reactive Verification: Using Turbine to test asynchronous StateFlow and Flow streams.
+---
 
-Database Verification: Local SQL testing using the JdbcSqliteDriver to run in-memory database tests.
+## 06. INITIALIZATION & DEPLOYMENT
+Follow these steps to prepare the development environment.
 
-UI Validation: Component-level verification using ComposeTestRule to ensure UI states (Loading, Error, Success) render correctly.
+### PRE-REQUISITES
+1. Ensure your IDE is set to **LF (Unix)** line endings to prevent TOML parsing failures.
+2. Verify `gradle/libs.versions.toml` is using `version.ref` for all declarations.
 
-5. Deployment and Configuration
-   5.1 Build Variants
-   The project currently utilizes standard build types without country-specific flavors:
-
-debug: Configured for development with extended logging and testing hooks.
-
-release: Production-ready build with R8 shrinking and optimized performance.
-
-5.2 Environment Setup
-Standardize line endings to LF (Unix) via .editorconfig or IDE settings.
-
-Synchronize the Version Catalog (libs.versions.toml) to ensure dependency consistency.
-
-Generate the database interface via Gradle: ./gradlew :data:generateDebugRecogidaDatabaseInterface
+### BUILD COMMANDS
+Generate the SQLDelight interfaces before the first compilation:
+```bash
+./gradlew :data:generateDebugRecogidaDatabaseInterface
