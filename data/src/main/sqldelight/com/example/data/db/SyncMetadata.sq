@@ -1,0 +1,10 @@
+CREATE TABLE SyncMetadata (
+    key TEXT NOT NULL PRIMARY KEY,
+    last_sync INTEGER NOT NULL
+);
+
+insertOrReplace:
+INSERT OR REPLACE INTO SyncMetadata(key, last_sync) VALUES (?, ?);
+
+selectLastSync:
+SELECT last_sync FROM SyncMetadata WHERE key = ?;

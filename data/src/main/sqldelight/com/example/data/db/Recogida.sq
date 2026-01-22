@@ -1,0 +1,19 @@
+CREATE TABLE AuthorizedEntity (
+    qrCode TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    role TEXT NOT NULL,
+    lastUpdated INTEGER NOT NULL
+);
+
+getPersonnelByQr:
+SELECT * FROM AuthorizedEntity WHERE qrCode = ?;
+
+insertUser:
+INSERT OR REPLACE INTO AuthorizedEntity(qrCode, name, role, lastUpdated)
+VALUES ?;
+
+selectAll:
+SELECT * FROM AuthorizedEntity;
+
+clearAll:
+DELETE FROM AuthorizedEntity;

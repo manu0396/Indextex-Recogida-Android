@@ -1,0 +1,55 @@
+package com.example.data.di
+
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import com.example.data.api.RecogidasApi
+import com.example.data.datasources.RecogidasLocalDataSource
+import com.example.data.datasources.RecogidasLocalDataSourceImpl
+import com.example.data.datasources.RecogidasRemoteDataSource
+import com.example.data.datasources.RecogidasRemoteDataSourceImpl
+import com.example.data.db.RecogidaDatabase
+import com.example.data.mapper.RecogidaMapper
+import com.example.data.repository.RecogidaRepositoryImpl
+import com.example.domain.repository.RecogidasRepository
+import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+val networkModule = module {
+    single<RecogidasApi> {
+        get<Retrofit>().create(RecogidasApi::class.java)
+    }
+    single<RecogidaDatabase> {
+        RecogidaDatabase(
+            driver = AndroidSqliteDriver(RecogidaDatabase.Schema, get(), "recogida.db")
+        )
+    }
+
+    single<RecogidasLocalDataSource> {
+        RecogidasLocalDataSourceImpl(database = get(), dispatchers = get())
+    }
+
+    single<RecogidasRemoteDataSource> {
+        RecogidasRemoteDataSourceImpl(api = get())
+    }
+
+    single<RecogidaMapper> { RecogidaMapper() }
+
+    single<RecogidasRepository> {
+        RecogidaRepositoryImpl(
+            remoteDataSource = get(),
+            localDataSource = get(),
+            mapper = get(),
+            dispatchers = get()
+        )
+    }
+    single {
+        Retrofit.Builder()
+            .baseUrl("https://api.inditex.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    single<RecogidasApi> {
+        get<Retrofit>().create(RecogidasApi::class.java)
+    }
+}

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">PDA Recogida</string>
+    <string name="recogidas_title">Recogida de Pedidos</string>
+    <string name="recogidas_btn_enable_camera">Habilitar Cámara</string>
+    <string name="recogidas_camera_inactive">Escáner láser o cámara desactivados</string>
+    <string name="recogidas_status_processing">Identificando personal…</string>
+    <string name="recogidas_error_prefix">Error: %1$s</string>
+    <string name="recogidas_error_unknown">Error inesperado en el sistema</string>
+    <string name="recogidas_log_binding_failed">Fallo vinculación cámara: %1$s</string>
+    <string name="recogidas_log_analysis_failed">Fallo en análisis MLKit: %1$s</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_favs">Favoritos</string>
+</resources>
