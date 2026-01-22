@@ -1,6 +1,7 @@
 package com.example.data.di
 
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import com.example.data.BuildConfig
 import com.example.data.api.RecogidasApi
 import com.example.data.datasources.RecogidasLocalDataSource
 import com.example.data.datasources.RecogidasLocalDataSourceImpl
@@ -8,6 +9,7 @@ import com.example.data.datasources.RecogidasRemoteDataSource
 import com.example.data.datasources.RecogidasRemoteDataSourceImpl
 import com.example.data.db.RecogidaDatabase
 import com.example.data.mapper.RecogidaMapper
+import com.example.data.repository.MockRecogidasRepository
 import com.example.data.repository.RecogidaRepositoryImpl
 import com.example.domain.repository.RecogidasRepository
 import org.koin.dsl.module
@@ -34,13 +36,17 @@ val networkModule = module {
 
     single<RecogidaMapper> { RecogidaMapper() }
 
-    single<RecogidasRepository> {
-        RecogidaRepositoryImpl(
-            remoteDataSource = get(),
-            localDataSource = get(),
-            mapper = get(),
-            dispatchers = get()
-        )
+    if(BuildConfig.FLAVOR_environment == "mock") {
+        single<RecogidasRepository> {
+            RecogidaRepositoryImpl(
+                remoteDataSource = get(),
+                localDataSource = get(),
+                mapper = get(),
+                dispatchers = get()
+            )
+        }
+    } else {
+        single<RecogidasRepository> { MockRecogidasRepository() }
     }
     single {
         Retrofit.Builder()

@@ -1,7 +1,9 @@
+import com.example.buildsrc.configureRecogidasModule
+
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -11,6 +13,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnit4Runner"
     }
+    configureRecogidasModule(this)
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21

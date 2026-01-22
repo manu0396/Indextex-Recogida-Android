@@ -37,6 +37,7 @@ firebase-auth = "23.1.0"
 playServicesMeasurementApi = "23.0.0"
 navigationCompose = "2.8.5"
 androidx-compose-adaptive = "1.0.0"
+jetbrainsKotlinJvm = "2.3.0"
 
 
 [libraries]
@@ -103,3 +104,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }

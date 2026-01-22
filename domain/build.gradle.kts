@@ -1,19 +1,19 @@
+import com.example.buildsrc.configureRecogidasModule
+
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
     namespace = "com.example.domain"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
-
+    configureRecogidasModule(this)
     buildTypes {
         release {
             isMinifyEnabled = false

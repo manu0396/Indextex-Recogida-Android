@@ -1,6 +1,8 @@
+import com.example.buildsrc.configureRecogidasModule
+
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
     alias(libs.plugins.sqldelight)
 }
 
@@ -19,9 +21,13 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    configureRecogidasModule(this)
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+    buildFeatures {
+        buildConfig = true
     }
     kotlin {
         compilerOptions {

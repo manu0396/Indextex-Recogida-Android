@@ -1,6 +1,8 @@
+import com.example.buildsrc.configureRecogidasModule
+
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -12,6 +14,7 @@ android {
         lint.targetSdk = libs.versions.android.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    configureRecogidasModule(this)
 
     buildTypes {
         release {
