@@ -1,4 +1,4 @@
-# PROJECT SPECIFICATION: INDITEX RECOGIDA ANDROID
+# PROJECT RECOGIDA ANDROID
 **Logistics Scanning & Personnel Management Platform**
 
 ---
