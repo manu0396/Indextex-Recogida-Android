@@ -59,13 +59,13 @@ class RecogidasViewModel(
         validateQrUseCase(qr).collect { result: ScanResult ->
             _uiState.update { currentState ->
                 when (result) {
+                    is ScanResult.Idle -> currentState
                     is ScanResult.Loading -> {
                         currentState.copy(
                             isLoading = true,
                             error = null
                         )
                     }
-
                     is ScanResult.Success -> {
                         currentState.copy(
                             isLoading = false,
@@ -75,7 +75,6 @@ class RecogidasViewModel(
                             lastScanTimestamp = System.currentTimeMillis()
                         )
                     }
-
                     is ScanResult.Error -> {
                         currentState.copy(
                             isLoading = false,

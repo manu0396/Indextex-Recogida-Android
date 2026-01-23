@@ -1,31 +1,48 @@
 package com.example.recogidas_presentation.navigation
 
 import android.util.Log
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.recogidas_presentation.ui.screens.RecogidaScannerScreen
+import com.example.recogidas_presentation.ui.screens.ManualEntryScreen
+import com.example.recogidas_presentation.ui.screens.ScannerScreen
+import com.example.recogidas_presentation.viewmodel.ScannerViewModel
+import org.koin.androidx.compose.koinViewModel
 
 const val ROUTE_RECOGIDA_SCANNER = "recogida_scanner"
+const val ROUTE_MANUAL_ENTRY = "manual_entry"
+const val KEY_MANUAL_CODE = "manual_code_result"
 
 private val TAG = "Navigation"
 fun NavGraphBuilder.recogidaGraph(navController: NavController) {
-    composable(route = ROUTE_RECOGIDA_SCANNER) {
-        val currentEntry by navController.currentBackStackEntryAsState()
-        val canNavigateBack = currentEntry != null && navController.previousBackStackEntry != null
-        RecogidaScannerScreen(
-            modifier = Modifier.fillMaxSize(),
-            onBack = if (canNavigateBack) {
-                {
-                    navController.popBackStack()
-                }
-            } else {
-                Log.e(TAG, "No backstack entry found")
-                null
+    composable(route = ROUTE_RECOGIDA_SCANNER) { backStackEntry ->
+        val viewModel: ScannerViewModel = koinViewModel()
+        val manualResult = backStackEntry.savedStateHandle.get<String>(KEY_MANUAL_CODE)
+        LaunchedEffect(manualResult) {
+            manualResult?.let { code ->
+                Log.d(TAG, "Código recibido de manual: $code")
+                viewModel.onQrCodeScanned(code)
+                backStackEntry.savedStateHandle.remove<String>(KEY_MANUAL_CODE)
+            }
+        }
+        ScannerScreen(
+            viewModel = viewModel,
+            onBack = { navController.popBackStack() },
+            onManualEntryClick = {
+                navController.navigate(ROUTE_MANUAL_ENTRY)
+            }
+        )
+    }
+    composable(route = ROUTE_MANUAL_ENTRY) {
+        ManualEntryScreen(
+            onBack = { navController.popBackStack() },
+            onCodeSubmitted = { code ->
+                Log.d(TAG, "Submitted code: $code")
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.set(KEY_MANUAL_CODE, code)
+                navController.popBackStack()
             }
         )
     }

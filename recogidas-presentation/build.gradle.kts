@@ -1,30 +1,13 @@
-import com.example.buildsrc.configureRecogidasModule
-
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("recogidas.android")
 }
 
 android {
     namespace = "com.example.recogidas_presentation"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnit4Runner"
-    }
-    configureRecogidasModule(this)
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
     buildFeatures {
         compose = true
-        buildConfig = true
-    }
-    kotlin {
-        jvmToolchain(libs.versions.jvmTarget.get().toInt())
-        jvmToolchain(21)
     }
 }
 dependencies {
@@ -50,6 +33,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.compose.material.icons.extended)
 
     // --- DI (Koin) ---
     implementation(libs.koin.android)
@@ -63,6 +47,7 @@ dependencies {
     implementation(libs.google.mlkit.barcode)
     implementation(libs.google.mlkit.vision.common)
     implementation(libs.google.guava)
+    implementation(libs.accompanist.permissions)
 
     // --- Camara utils ---
     implementation(libs.androidx.concurrent.futures.ktx)

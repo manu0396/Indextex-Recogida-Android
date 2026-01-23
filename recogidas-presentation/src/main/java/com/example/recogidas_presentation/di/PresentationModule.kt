@@ -8,8 +8,9 @@ import com.example.recogidas_presentation.viewmodel.RecogidasViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import com.example.domain.repository.RecogidasRepository
+import com.example.recogidas_presentation.viewmodel.ScannerViewModel
 
-val recogidasModule = module {
+val presentationModule = module {
     factory { ValidateQrUseCase(repository = get()) }
     factory { SyncAuthorizedUserUseCase(repository = get(), dispatchers = get()) }
     factory { (onQrDetected: (String) -> Unit) ->
@@ -22,6 +23,11 @@ val recogidasModule = module {
         RecogidasViewModel(
             validateQrUseCase = get(),
             syncUseCase = get()
+        )
+    }
+    viewModel {
+        ScannerViewModel(
+            repository = get()
         )
     }
 }

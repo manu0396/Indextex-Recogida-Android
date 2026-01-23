@@ -4,7 +4,7 @@ import android.app.Application
 import com.example.core_common.di.coreCommonModule
 import com.example.data.di.networkModule
 import com.example.data_core.di.dataCoreModule
-import com.example.recogidas_presentation.di.recogidasModule
+import com.example.recogidas_presentation.di.presentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import com.example.domain.di.domainModule
@@ -23,7 +23,7 @@ class App : Application() {
                 networkModule,
                 dataCoreModule,
                 domainModule,
-                recogidasModule
+                presentationModule
             )
             )
         }

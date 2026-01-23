@@ -24,7 +24,6 @@ abstract class BaseViewModel : ViewModel() {
                 onError?.invoke(msg)
                 handleError(e)
             } finally {
-                // Stop Loading
                 onLoading?.invoke(false)
             }
         }

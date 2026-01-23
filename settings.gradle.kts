@@ -1,16 +1,11 @@
 pluginManagement {
     repositories {
         google()
-        mavenCentral()
+        mavenCentral() // CRITICAL: SQLDelight is hosted here
         gradlePluginPortal()
     }
-    plugins {
-        kotlin("jvm") version "2.2.20"
-    }
 }
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -20,12 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "InditexRecogidaAndroid"
-
-include(":app")
-include(":data-core")
-include(":data")
-include(":domain")
-include(":session")
-include(":components")
-include(":recogidas-presentation")
-include(":core-common")
+include(":app", ":domain", ":data", ":data-core", ":core-common", ":recogidas-presentation", ":components", ":session",)

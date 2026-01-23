@@ -10,4 +10,27 @@
     <string name="recogidas_log_analysis_failed">Fallo en análisis MLKit: %1$s</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_favs">Favoritos</string>
+    <string name="scanner_status_validated">VALIDADO</string>
+    <string name="scanner_status_error">ERROR</string>
+    <string name="scanner_title">Gestión de Recogidas</string>
+    <string name="scanner_manual_entry">Entrada Manual</string>
+    <string name="scanner_validate_code">Validar Código</string>
+    <string name="preview_bulto_name">Bulto #123456</string>
+    <string name="preview_error_msg">El código no pertenece a esta ruta</string>
+    <string name="scanner_manual_entry_title">Entrada Manual</string>
+    <string name="scanner_manual_button">Manual</string>
+    <string name="scanner_validate_code_button">Validar Código</string>
+    <string name="scanner_back_content_desc">Atrás</string>
+    <string name="scanner_code_hint">Ej: INDITEX-123456</string>
+    <string name="scanner_code_label">Código de Recogida</string>
+    <string name="dialog_validated_title">Código Validado</string>
+    <string name="dialog_validated_msg">El código \'%1$s\' tiene el formato correcto y será procesado.</string>
+    <string name="dialog_error_title">Formato Incorrecto</string>
+    <string name="dialog_error_msg">El código debe comenzar con el prefijo \'INDITEX\' seguido de 6 dígitos. Por favor verifica la etiqueta.</string>
+    <string name="dialog_accept">Aceptar</string>
+    <string name="dialog_retry">Reintentar</string>
+    <string name="dialog_grant_permission">Conceder Permiso</string>
+    <string name="permission_camera_rationale">El acceso a la cámara es necesario para escanear códigos QR. Por favor, concede el permiso.</string>
+    <string name="permission_camera_required">Se requiere permiso de cámara para usar el escáner.</string>
+    <string name="error_invalid_format_msg">El código debe empezar por INDITEX- seguido de 6 números</string>
 </resources>

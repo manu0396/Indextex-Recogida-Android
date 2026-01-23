@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">data</string>
+    <string name="scanner_title">Gestión de Recogidas</string>
+    <string name="scanner_manual_entry">Entrada Manual</string>
+    <string name="scanner_manual_label">Manual</string>
+    <string name="scanner_validate_code">Validar Código</string>
+    <string name="scanner_back">Atrás</string>
+    <string name="scanner_status_validated">VALIDADO</string>
+    <string name="scanner_status_error">ERROR</string>
+    <string name="scanner_permission_rationale">El acceso a la cámara es necesario para escanear códigos QR. Por favor, concede el permiso.</string>
+    <string name="scanner_permission_required">Se requiere permiso de cámara para usar el escáner.</string>
+    <string name="scanner_grant_permission">Conceder Permiso</string>
+    <string name="scanner_error_invalid_format">El código debe empezar por INDITEX- seguido de 6 números</string>
 </resources>

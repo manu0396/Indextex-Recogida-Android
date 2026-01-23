@@ -1,37 +1,15 @@
-import com.example.buildsrc.configureRecogidasModule
-
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("recogidas.android")
 }
 
 android {
     namespace = "com.example.pda_recogida_android"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        applicationId = "com.example.pda_recogida_android"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    configureRecogidasModule(this)
-    kotlin {
-        jvmToolchain(libs.versions.jvmTarget.get().toInt())
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
 }
 
 dependencies {
+    // Feature & Internal Modules
     implementation(project(":core-common"))
     implementation(project(":data-core"))
     implementation(project(":data"))
@@ -40,26 +18,29 @@ dependencies {
     implementation(project(":components"))
     implementation(project(":recogidas-presentation"))
 
-    // DI - Koin (Required for App.kt startKoin)
+    // Tech Stack
     implementation(libs.koin.android)
-    implementation(libs.koin.core)
+    implementation(libs.koin.androidx.compose)
 
-    // UI - Compose & Activity (Required for setContent)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.androidx.compose.ui.tooling.preview)
 
-
-    // Adaptive & Navigation Suite (Required for MainActivity references)
     implementation(libs.androidx.compose.material3.adaptive)
-    implementation(libs.androidx.compose.material3.adaptive.layout)
-    implementation(libs.androidx.compose.material3.adaptive.navigation)
-    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.navigation.compose)
-
-    // Lifecycle
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockk)
+    testImplementation(libs.test.coroutines)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit4)
+
+    // Android Tests
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

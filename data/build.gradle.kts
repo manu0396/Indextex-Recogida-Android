@@ -1,41 +1,21 @@
-import com.example.buildsrc.configureRecogidasModule
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    alias(libs.plugins.sqldelight)
+    id("recogidas.android")
+    id("app.cash.sqldelight")
 }
 
 sqldelight {
     databases {
         create("RecogidaDatabase") {
             packageName.set("com.example.data.db")
+            dialect("app.cash.sqldelight:sqlite-3-38-dialect:2.0.2")
         }
     }
 }
 
 android {
     namespace = "com.example.data"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    configureRecogidasModule(this)
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    buildFeatures {
-        buildConfig = true
-    }
-    kotlin {
-        compilerOptions {
-            jvmToolchain(libs.versions.jvmTarget.get().toInt())
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
-            freeCompilerArgs.add("-Xjdk-release=21")
-        }
-    }
 }
 
 dependencies {
@@ -60,6 +40,6 @@ dependencies {
     testImplementation(libs.test.okhttp.mockwebserver)
     testImplementation(libs.test.sqldelight.driver)
     // For instrumented hardware tests
+    androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.test.mockk.android)
-    androidTestImplementation(libs.androidx.junit)
 }

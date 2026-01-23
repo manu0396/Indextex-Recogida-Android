@@ -36,17 +36,11 @@ val networkModule = module {
 
     single<RecogidaMapper> { RecogidaMapper() }
 
-    if(BuildConfig.FLAVOR_environment == "mock") {
-        single<RecogidasRepository> {
-            RecogidaRepositoryImpl(
-                remoteDataSource = get(),
-                localDataSource = get(),
-                mapper = get(),
-                dispatchers = get()
-            )
-        }
-    } else {
+    //TODO: Modify when Prod server is available
+    if (BuildConfig.FLAVOR == "spainPre") {
         single<RecogidasRepository> { MockRecogidasRepository() }
+    } else {
+        single<RecogidasRepository> { RecogidaRepositoryImpl(get(), get(), get(), get()) }
     }
     single {
         Retrofit.Builder()
