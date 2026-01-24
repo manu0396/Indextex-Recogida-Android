@@ -1,71 +1,25 @@
 package com.example.recogidas_presentation.ui.screens
 
-import android.Manifest
-import android.app.Activity
-import android.media.AudioManager
-import android.media.ToneGenerator
-import android.view.KeyEvent
-import android.view.WindowManager
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FlashOff
-import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.QrCodeScanner
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.domain.model.ScanResult
 import com.example.recogidas_presentation.R
-import com.example.recogidas_presentation.components.AskPermissionDialog
-import com.example.recogidas_presentation.ui.screens.states.ScannerUiState
-import com.example.recogidas_presentation.viewmodel.ScannerViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.example.recogidas_presentation.components.ScanResultFeedback
+import com.example.recogidas_presentation.viewmodel.ScannerViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScannerScreen(
     viewModel: ScannerViewModel,
@@ -73,35 +27,10 @@ fun ScannerScreen(
     onManualEntryClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
-    val haptic = LocalHapticFeedback.current
     val focusRequester = remember { FocusRequester() }
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+
     LaunchedEffect(Unit) {
-        if (!cameraPermissionState.status.isGranted) {
-            cameraPermissionState.launchPermissionRequest()
-        }
-    }
-    LaunchedEffect(state.scanStatus) {
-        when (state.scanStatus) {
-            is ScanResult.Success -> {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
-                    .startTone(ToneGenerator.TONE_PROP_BEEP)
-            }
-            is ScanResult.Error -> {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            }
-            else -> {
-
-            }
-        }
-    }
-
-    DisposableEffect(Unit) {
-        val window = (context as? Activity)?.window
-        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        onDispose { window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
+        focusRequester.requestFocus()
     }
 
     Scaffold(
@@ -109,15 +38,12 @@ fun ScannerScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.scanner_title)) },
                 navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
+                    onBack?.let {
+                        IconButton(onClick = it) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                         }
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                }
             )
         }
     ) { innerPadding ->
@@ -127,55 +53,44 @@ fun ScannerScreen(
                 .padding(innerPadding)
                 .focusRequester(focusRequester)
                 .focusable()
-                .onKeyEvent { event ->
-                    if (event.type == KeyEventType.KeyDown) {
-                        when (event.nativeKeyEvent.keyCode) {
-                            KeyEvent.KEYCODE_BUTTON_L1, 293 -> {
-                                viewModel.onScanTriggerPressed()
-                                true
-                            }
-                            else -> false
-                        }
-                    } else false
-                }
         ) {
-            if (cameraPermissionState.status.isGranted) {
-                CameraPreviewScreen(
-                    torchEnabled = state.isTorchOn,
-                    onQrDetected = viewModel::onQrCodeScanned
-                )
+            CameraPreviewScreen(
+                torchEnabled = state.isTorchOn,
+                onQrDetected = viewModel::onQrCodeScanned
+            )
 
-                ScanResultFeedback(
-                    result = state.scanStatus,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-
-                ScannerOverlay(
-                    isTorchOn = state.isTorchOn,
-                    onTorchToggle = viewModel::toggleTorch,
-                    onManualEntry = onManualEntryClick,
-                    onScanClick = viewModel::onScanTriggerPressed
-                )
-            }else{
-                AskPermissionDialog(
-                    shouldShowRationale = cameraPermissionState.status.shouldShowRationale,
-                    onRequestPermission = { cameraPermissionState.launchPermissionRequest() }
+            if (state.isScanPending) {
+                Text(
+                    text = stringResource(R.string.scanner_status_scanning),
+                    modifier = Modifier.align(Alignment.Center).padding(bottom = 120.dp),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
-            if (state.isProcessing) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
+
+            ScanResultFeedback(
+                result = state.scanStatus,
+                modifier = Modifier.align(Alignment.Center)
+            )
+
+            ScannerOverlay(
+                isTorchOn = state.isTorchOn,
+                isScanning = state.isScanPending,
+                onTorchToggle = viewModel::toggleTorch,
+                onManualEntry = onManualEntryClick,
+                onScanClick = {
+                    if (state.isScanPending) viewModel.stopScanning()
+                    else viewModel.onScanTriggerPressed()
+                }
+            )
         }
-    }
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
     }
 }
 
 @Composable
 fun ScannerOverlay(
     isTorchOn: Boolean,
+    isScanning: Boolean,
     onTorchToggle: () -> Unit,
     onManualEntry: () -> Unit,
     onScanClick: () -> Unit
@@ -190,6 +105,7 @@ fun ScannerOverlay(
                 contentDescription = null
             )
         }
+
         Row(
             modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -201,22 +117,22 @@ fun ScannerOverlay(
                 Text(stringResource(R.string.scanner_manual_button))
             }
 
-            LargeScanButton(onClick = onScanClick)
+            LargeScanButton(isScanning = isScanning, onClick = onScanClick)
         }
     }
 }
 
 @Composable
-fun LargeScanButton(onClick: () -> Unit) {
+fun LargeScanButton(isScanning: Boolean, onClick: () -> Unit) {
     FilledIconButton(
         onClick = onClick,
         modifier = Modifier.size(80.dp),
         colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = if (isScanning) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
         )
     ) {
         Icon(
-            imageVector = Icons.Rounded.QrCodeScanner,
+            imageVector = if (isScanning) Icons.Rounded.Close else Icons.Rounded.QrCodeScanner,
             contentDescription = null,
             modifier = Modifier.size(40.dp)
         )

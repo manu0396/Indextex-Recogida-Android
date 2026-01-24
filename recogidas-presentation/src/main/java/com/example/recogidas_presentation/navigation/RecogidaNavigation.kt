@@ -15,17 +15,20 @@ const val ROUTE_MANUAL_ENTRY = "manual_entry"
 const val KEY_MANUAL_CODE = "manual_code_result"
 
 private val TAG = "Navigation"
+
 fun NavGraphBuilder.recogidaGraph(navController: NavController) {
     composable(route = ROUTE_RECOGIDA_SCANNER) { backStackEntry ->
         val viewModel: ScannerViewModel = koinViewModel()
         val manualResult = backStackEntry.savedStateHandle.get<String>(KEY_MANUAL_CODE)
+
         LaunchedEffect(manualResult) {
             manualResult?.let { code ->
                 Log.d(TAG, "Código recibido de manual: $code")
-                viewModel.onQrCodeScanned(code)
+                viewModel.onManualCodeScanned(code) // Use the manual trigger
                 backStackEntry.savedStateHandle.remove<String>(KEY_MANUAL_CODE)
             }
         }
+
         ScannerScreen(
             viewModel = viewModel,
             onBack = { navController.popBackStack() },
@@ -34,11 +37,11 @@ fun NavGraphBuilder.recogidaGraph(navController: NavController) {
             }
         )
     }
+
     composable(route = ROUTE_MANUAL_ENTRY) {
         ManualEntryScreen(
             onBack = { navController.popBackStack() },
             onCodeSubmitted = { code ->
-                Log.d(TAG, "Submitted code: $code")
                 navController.previousBackStackEntry
                     ?.savedStateHandle
                     ?.set(KEY_MANUAL_CODE, code)

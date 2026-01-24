@@ -1,14 +1,15 @@
 package com.example.recogidas_presentation.di
 
 import com.example.data.repository.RecogidaRepositoryImpl
+import com.example.domain.repository.RecogidasRepository
 import com.example.domain.usecases.SyncAuthorizedUserUseCase
 import com.example.domain.usecases.ValidateQrUseCase
 import com.example.recogidas_presentation.ui.analyzer.QrCodeAnalyzer
 import com.example.recogidas_presentation.viewmodel.RecogidasViewModel
+import com.example.recogidas_presentation.viewmodel.ScannerViewModel
+import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import com.example.domain.repository.RecogidasRepository
-import com.example.recogidas_presentation.viewmodel.ScannerViewModel
 
 val presentationModule = module {
     factory { ValidateQrUseCase(repository = get()) }
@@ -19,7 +20,7 @@ val presentationModule = module {
     single<RecogidasRepository> {
         RecogidaRepositoryImpl(get(), get(), get(), get())
     }
-    viewModel {
+    factory { (onQrDetected: (String) -> Unit) ->
         RecogidasViewModel(
             validateQrUseCase = get(),
             syncUseCase = get()
@@ -27,7 +28,8 @@ val presentationModule = module {
     }
     viewModel {
         ScannerViewModel(
-            repository = get()
+            repository = get(),
+            application = androidApplication()
         )
     }
 }

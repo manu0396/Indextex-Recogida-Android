@@ -1,11 +1,13 @@
 package com.example.buildsrc
 
+import com.android.build.api.dsl.ApplicationDefaultConfig
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -54,11 +56,17 @@ class RecogidasAndroidPlugin : Plugin<Project> {
     }
 
     private fun Project.configureCommonAndroid(extension: CommonExtension<*, *, *, *, *, *>) {
+        val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
+        val compileSdkVer = libs.findVersion("android-compileSdk").get().requiredVersion.toInt()
+        val targetSdkVer = libs.findVersion("android-targetSdk").get().requiredVersion.toInt()
         extension.apply {
-            compileSdk = 35
+            compileSdk = compileSdkVer
 
             defaultConfig {
                 minSdk = 26
+                if (this is ApplicationDefaultConfig) {
+                    targetSdk = targetSdkVer
+                }
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
 
