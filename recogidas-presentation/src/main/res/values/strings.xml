@@ -19,6 +19,8 @@
     <string name="preview_error_msg">El código no pertenece a esta ruta</string>
     <string name="scanner_manual_entry_title">Entrada Manual</string>
     <string name="scanner_manual_button">Manual</string>
+    <string name="scanner_manual_entry_button">Validar</string>
+    <string name="scanner_manual_entry_hint">Introducir código manual</string>
     <string name="scanner_validate_code_button">Validar Código</string>
     <string name="scanner_back_content_desc">Atrás</string>
     <string name="scanner_code_hint">Ej: INDITEX-123456</string>
@@ -33,5 +35,8 @@
     <string name="permission_camera_rationale">El acceso a la cámara es necesario para escanear códigos QR. Por favor, concede el permiso.</string>
     <string name="permission_camera_required">Se requiere permiso de cámara para usar el escáner.</string>
     <string name="error_invalid_format_msg">El código debe empezar por INDITEX- seguido de 6 números</string>
-    <string name="scanner_status_scanning">Escaneando...</string>
+    <string name="camera_permission_missing">Se requiere permiso de cámara</string>
+    <string name="input_label_code">Código</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="scanner_status_scanning">Escaneando…</string>
 </resources>

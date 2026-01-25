@@ -17,9 +17,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val networkModule = module {
-    single<RecogidasApi> {
-        get<Retrofit>().create(RecogidasApi::class.java)
-    }
+
     single<RecogidaDatabase> {
         RecogidaDatabase(
             driver = AndroidSqliteDriver(RecogidaDatabase.Schema, get(), "recogida.db")
@@ -36,12 +34,21 @@ val networkModule = module {
 
     single<RecogidaMapper> { RecogidaMapper() }
 
-    //TODO: Modify when Prod server is available
+    // --- FIX: FORCE MOCK TO BYPASS 404 ---
+    // TODO: Revert to 'if/else' logic when Server Prod is fixed
+    single<RecogidasRepository> {
+        MockRecogidasRepository()
+    }
+
+    /* // OLD LOGIC (Disabled)
     if (BuildConfig.FLAVOR == "spainPre") {
         single<RecogidasRepository> { MockRecogidasRepository() }
     } else {
         single<RecogidasRepository> { RecogidaRepositoryImpl(get(), get(), get(), get()) }
     }
+    */
+    // -------------------------------------
+
     single {
         Retrofit.Builder()
             .baseUrl("https://api.inditex.com/")

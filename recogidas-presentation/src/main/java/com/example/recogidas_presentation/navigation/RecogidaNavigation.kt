@@ -24,17 +24,13 @@ fun NavGraphBuilder.recogidaGraph(navController: NavController) {
         LaunchedEffect(manualResult) {
             manualResult?.let { code ->
                 Log.d(TAG, "Código recibido de manual: $code")
-                viewModel.onManualCodeScanned(code) // Use the manual trigger
                 backStackEntry.savedStateHandle.remove<String>(KEY_MANUAL_CODE)
             }
         }
 
         ScannerScreen(
             viewModel = viewModel,
-            onBack = { navController.popBackStack() },
-            onManualEntryClick = {
-                navController.navigate(ROUTE_MANUAL_ENTRY)
-            }
+            onBack = { navController.popBackStack() }
         )
     }
 

@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.android)
     testImplementation(libs.test.junit)

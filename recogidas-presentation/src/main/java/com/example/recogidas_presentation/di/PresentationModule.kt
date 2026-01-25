@@ -17,9 +17,6 @@ val presentationModule = module {
     factory { (onQrDetected: (String) -> Unit) ->
         QrCodeAnalyzer(context = get(), onQrDetected = onQrDetected)
     }
-    single<RecogidasRepository> {
-        RecogidaRepositoryImpl(get(), get(), get(), get())
-    }
     factory { (onQrDetected: (String) -> Unit) ->
         RecogidasViewModel(
             validateQrUseCase = get(),
@@ -28,8 +25,7 @@ val presentationModule = module {
     }
     viewModel {
         ScannerViewModel(
-            repository = get(),
-            application = androidApplication()
+            validateQrUseCase = get()
         )
     }
 }

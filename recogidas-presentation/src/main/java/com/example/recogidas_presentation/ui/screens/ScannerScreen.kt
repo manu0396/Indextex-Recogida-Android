@@ -1,5 +1,9 @@
 package com.example.recogidas_presentation.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -13,8 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.recogidas_presentation.R
 import com.example.recogidas_presentation.components.ScanResultFeedback
 import com.example.recogidas_presentation.viewmodel.ScannerViewModel
@@ -23,13 +29,33 @@ import com.example.recogidas_presentation.viewmodel.ScannerViewModel
 @Composable
 fun ScannerScreen(
     viewModel: ScannerViewModel,
-    onBack: (() -> Unit)? = null,
-    onManualEntryClick: () -> Unit
+    onBack: (() -> Unit)? = null
 ) {
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
+    var showManualInput by remember { mutableStateOf(false) }
+
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            hasCameraPermission = granted
+        }
+    )
 
     LaunchedEffect(Unit) {
+        if (!hasCameraPermission) {
+            launcher.launch(Manifest.permission.CAMERA)
+        }
         focusRequester.requestFocus()
     }
 
@@ -54,15 +80,23 @@ fun ScannerScreen(
                 .focusRequester(focusRequester)
                 .focusable()
         ) {
-            CameraPreviewScreen(
-                torchEnabled = state.isTorchOn,
-                onQrDetected = viewModel::onQrCodeScanned
-            )
+            if (hasCameraPermission) {
+                CameraPreviewScreen(
+                    torchEnabled = state.isTorchOn,
+                    onQrDetected = { code -> viewModel.onCodeScanned(code) }
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(stringResource(R.string.camera_permission_missing))
+                }
+            }
 
             if (state.isScanPending) {
                 Text(
                     text = stringResource(R.string.scanner_status_scanning),
-                    modifier = Modifier.align(Alignment.Center).padding(bottom = 120.dp),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(bottom = 120.dp),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -77,14 +111,53 @@ fun ScannerScreen(
                 isTorchOn = state.isTorchOn,
                 isScanning = state.isScanPending,
                 onTorchToggle = viewModel::toggleTorch,
-                onManualEntry = onManualEntryClick,
+                onManualEntry = { showManualInput = true },
                 onScanClick = {
-                    if (state.isScanPending) viewModel.stopScanning()
-                    else viewModel.onScanTriggerPressed()
+                    viewModel.onScanTriggerPressed()
                 }
             )
+
+            if (showManualInput) {
+                ManualEntryDialog(
+                    onDismiss = { showManualInput = false },
+                    onConfirm = { code ->
+                        viewModel.onManualCodeEntered(code)
+                        showManualInput = false
+                    }
+                )
+            }
         }
     }
+}
+
+@Composable
+fun ManualEntryDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+    val inputState = remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.scanner_manual_entry_hint)) },
+        text = {
+            OutlinedTextField(
+                value = inputState.value,
+                onValueChange = { input: String ->
+                    inputState.value = input
+                },
+                label = { Text(stringResource(R.string.input_label_code)) },
+                singleLine = true
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(inputState.value) }) {
+                Text(stringResource(R.string.scanner_manual_entry_button))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        }
+    )
 }
 
 @Composable
@@ -114,7 +187,7 @@ fun ScannerOverlay(
             Button(onClick = onManualEntry) {
                 Icon(Icons.Default.Edit, null)
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.scanner_manual_button))
+                Text(stringResource(R.string.scanner_manual_entry_button))
             }
 
             LargeScanButton(isScanning = isScanning, onClick = onScanClick)

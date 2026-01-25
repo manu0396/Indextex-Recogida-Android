@@ -14,6 +14,7 @@ sealed class RecogidasEvent {
 }
 
 data class ScannerUiState(
+    val isScanning: Boolean = false,
     val isTorchOn: Boolean = false,
     val lastScannedCode: String? = null,
     val scanStatus: ScanResult = ScanResult.Idle,
