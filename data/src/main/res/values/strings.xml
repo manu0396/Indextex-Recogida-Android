@@ -10,5 +10,5 @@
     <string name="scanner_permission_rationale">El acceso a la cámara es necesario para escanear códigos QR. Por favor, concede el permiso.</string>
     <string name="scanner_permission_required">Se requiere permiso de cámara para usar el escáner.</string>
     <string name="scanner_grant_permission">Conceder Permiso</string>
-    <string name="scanner_error_invalid_format">El código debe empezar por INDITEX- seguido de 6 números</string>
+    <string name="scanner_error_invalid_format">El código debe empezar por INDITEX_ seguido de 6 números</string>
 </resources>

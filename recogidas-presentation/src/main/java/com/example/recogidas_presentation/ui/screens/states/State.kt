@@ -19,5 +19,9 @@ data class ScannerUiState(
     val lastScannedCode: String? = null,
     val scanStatus: ScanResult = ScanResult.Idle,
     val isProcessing: Boolean = false,
-    val isScanPending: Boolean = false
+    val isScanPending: Boolean = false,
+    val stage: ScannerStage = ScannerStage.IDLE
 )
+
+enum class ScannerStage { IDLE, DETECTING, VALIDATING, FEEDBACK }
+

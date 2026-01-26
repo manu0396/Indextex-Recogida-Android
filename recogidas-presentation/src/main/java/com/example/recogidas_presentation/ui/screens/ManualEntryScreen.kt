@@ -37,17 +37,11 @@ fun ManualEntryScreen(
     onCodeSubmitted: (String) -> Unit
 ) {
     var codeInput by remember { mutableStateOf(TextFieldValue("")) }
-    var showSuccessDialog by remember { mutableStateOf(false) }
-    var showErrorDialog by remember { mutableStateOf(false) }
 
     fun validateAndSubmit() {
         val text = codeInput.text.trim().uppercase()
-        val isValid = text.matches(Regex("^INDITEX-\\d{6}$"))
-
-        if (isValid) {
-            showSuccessDialog = true
-        } else {
-            showErrorDialog = true
+        if (text.isNotBlank()) {
+            onCodeSubmitted(text)
         }
     }
 
@@ -57,7 +51,7 @@ fun ManualEntryScreen(
                 title = { Text(stringResource(R.string.scanner_manual_entry_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -77,7 +71,7 @@ fun ManualEntryScreen(
                 label = { Text(stringResource(R.string.scanner_code_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                isError = showErrorDialog
+                // Removed: isError = showErrorDialog
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -92,22 +86,5 @@ fun ManualEntryScreen(
                 Text(stringResource(R.string.scanner_validate_code_button))
             }
         }
-    }
-
-    if (showSuccessDialog) {
-        ValidationSuccessDialog(
-            code = codeInput.text,
-            onConfirm = {
-                onCodeSubmitted(codeInput.text)
-            }
-        )
-    }
-
-    if (showErrorDialog) {
-        ValidationErrorDialog(
-            onDismiss = {
-                showErrorDialog = false
-            }
-        )
     }
 }

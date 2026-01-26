@@ -7,6 +7,6 @@ sealed class ScanResult {
     data object Idle : ScanResult()
     data class FormatError(
         val read: String,
-        val expected: String = "INDITEX-XXXXXX"
+        val expected: String = "INDITEX_XXXXXX"
     ) : ScanResult()
 }

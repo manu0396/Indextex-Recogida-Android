@@ -48,6 +48,7 @@ androidxJunit = "1.2.1"
 espresso = "3.6.1"
 mockk = "1.13.13"
 turbine = "1.2.0"
+robolectric = "4.12.1"
 
 [libraries]
 # --- AndroidX Core ---
@@ -126,6 +127,7 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 test-compose-ui-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 test-compose-ui-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+test-robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

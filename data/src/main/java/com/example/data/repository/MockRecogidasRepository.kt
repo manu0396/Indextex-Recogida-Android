@@ -1,6 +1,6 @@
 package com.example.data.repository
 
-import android.util.Log
+import com.example.data.utils.DataConstants.MOCK_DELAY
 import com.example.domain.model.ScanResult
 import com.example.domain.repository.RecogidasRepository
 import kotlinx.coroutines.delay
@@ -11,28 +11,28 @@ import kotlinx.coroutines.flow.flow
 class MockRecogidasRepository : RecogidasRepository {
 
     override fun validateQr(qr: String): Flow<ScanResult> = flow {
-        delay(1000)
-        val id = qr.substringAfter("-")
-        when (id) {
-            "000000" -> {
-                // Simulate a valid format but unauthorized user in the DB
-                emit(ScanResult.Error("Usuario no autorizado para esta ruta (ID: $id)"))
-            }
-            "999999" -> {
-                // Simulate a server timeout/crash
-                throw Exception("Error de conexión con el servidor de Inditex")
-            }
-            else -> {
-                // Default success case
-                emit(ScanResult.Success(
-                    name = "Manuel Lucas",
-                    type = "Sénior - Código $id"
-                ))
-            }
+        emit(ScanResult.Loading)
+        delay(MOCK_DELAY)
+        if (qr.contains("QR-CODES") || qr.contains("CODES.IO")) {
+            emit(ScanResult.Success(name = "Test User", type = "MOCK URL"))
+            return@flow
         }
-    }.catch { e ->
-        emit(ScanResult.Error(e.message ?: "Error desconocido"))
-    }
+        if (!qr.contains("_") || qr.startsWith("_")) {
+            emit(ScanResult.FormatError(
+                read = qr.take(15),
+                expected = "INDITEX_XXXXXX"
+            ))
+            return@flow
+        }
+        when (val id = qr.substringAfter("_")) {
+            "000000" -> emit(ScanResult.Error("Usuario no autorizado (ID: $id)"))
+            "999999" -> throw Exception("Error de conexión con el servidor")
+            else -> emit(ScanResult.Success(
+                name = "Manuel Lucas",
+                type = "ID: $id"
+            ))
+        }
+    }.catch { e -> emit(ScanResult.Error(e.message + "Unknown Error")) }
 
     override suspend fun syncAuthorizedPersonnel() {
         delay(500)

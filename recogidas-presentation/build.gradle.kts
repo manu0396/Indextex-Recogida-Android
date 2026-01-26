@@ -9,6 +9,11 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 dependencies {
     implementation(project(":domain"))
@@ -63,6 +68,7 @@ dependencies {
     testImplementation(libs.test.coroutines)
     testImplementation(libs.test.turbine)
     testImplementation(libs.test.compose.ui.junit4)
+    testImplementation(libs.test.robolectric)
 
     // UI Testing
     androidTestImplementation(platform(libs.androidx.compose.bom))

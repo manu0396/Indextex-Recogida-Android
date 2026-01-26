@@ -18,6 +18,7 @@ class App : Application() {
         startKoin {
             androidLogger(Level.ERROR)
             androidContext(this@App)
+            properties(mapOf("IS_DEBUG_MODE" to BuildConfig.DEBUG))
             modules(listOf(
                 coreCommonModule,
                 networkModule,

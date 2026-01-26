@@ -1,8 +1,11 @@
 package com.example.recogidas_presentation.viewmodel
 
+import android.util.Log
 import com.example.domain.model.ScanResult
 import com.example.domain.usecases.ValidateQrUseCase
+import com.example.recogidas_presentation.ui.screens.states.ScannerStage
 import com.example.recogidas_presentation.ui.screens.states.ScannerUiState
+import com.example.recogidas_presentation.utils.ScannerUIConstants
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,39 +13,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class ScannerViewModel(
-    private val validateQrUseCase: ValidateQrUseCase
+    private val validateQrUseCase: ValidateQrUseCase,
 ) : BaseViewModel() {
 
-    private val _uiState = MutableStateFlow(ScannerUiState())
+    private val _uiState = MutableStateFlow(ScannerUiState(
+        isScanning = true,
+        isScanPending = true,
+        stage = ScannerStage.DETECTING
+    ))
     val uiState: StateFlow<ScannerUiState> = _uiState.asStateFlow()
 
-    private var lastTriggerTime = 0L
-
+    // Fixed: Restored and synchronized with the new stage logic
     fun onScanTriggerPressed() {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastTriggerTime < 500) return
-        lastTriggerTime = currentTime
-
-        if (_uiState.value.isScanPending) stopScanning() else startScanning()
-    }
-
-    fun startScanning() {
-        _uiState.update {
-            it.copy(
-                isScanning = true,
-                isScanPending = true,
-                scanStatus = ScanResult.Idle,
-                lastScannedCode = null
-            )
-        }
-    }
-
-    fun stopScanning() {
-        _uiState.update {
-            it.copy(
-                isScanning = false,
-                isScanPending = false,
-                isProcessing = false
+        _uiState.update { state ->
+            val nextPending = !state.isScanPending
+            state.copy(
+                isScanPending = nextPending,
+                stage = if (nextPending) ScannerStage.DETECTING else ScannerStage.IDLE
             )
         }
     }
@@ -52,61 +39,74 @@ class ScannerViewModel(
     }
 
     fun onManualCodeEntered(code: String) {
-        if (code.isNotBlank()) {
-            validateCode(code.trim())
-        }
+        if (code.isBlank() || _uiState.value.isProcessing) return
+        val sanitized = code.trim().uppercase()
+
+        _uiState.update { it.copy(
+            stage = ScannerStage.VALIDATING,
+            isProcessing = true,
+            isScanPending = false,
+            lastScannedCode = sanitized,
+            scanStatus = ScanResult.Loading
+        )}
+
+        validateCode(sanitized)
     }
 
     fun onCodeScanned(code: String) {
         val currentState = _uiState.value
-        if (!currentState.isScanPending || currentState.isProcessing) return
-        if (currentState.scanStatus !is ScanResult.Idle) return
-        validateCode(code)
+        if (currentState.stage != ScannerStage.DETECTING || !currentState.isScanPending) return
+        val sanitizedCode = code
+            .filter { it.isLetterOrDigit() || it in "_" }
+            .trim()
+            .uppercase()
+        Log.d("ScannerVM", "Raw: $code -> Sanitized: $sanitizedCode")
+        _uiState.update { state ->
+            state.copy(
+                stage = ScannerStage.VALIDATING,
+                isScanPending = false,
+                isProcessing = true,
+                lastScannedCode = sanitizedCode
+            )
+        }
+        validateCode(sanitizedCode)
     }
 
     private fun validateCode(code: String) {
         launchSafe(
-            onLoading = { loadingState ->
-                _uiState.update { it.copy(isProcessing = loadingState) }
+            onLoading = { isLoading ->
+                _uiState.update { it.copy(
+                    isProcessing = isLoading,
+                    isScanPending = if (isLoading) false else it.isScanPending,
+                    stage = if (isLoading) ScannerStage.VALIDATING else it.stage
+                ) }
             },
-            onError = { errorMsg ->
-                _uiState.update { it.copy(scanStatus = ScanResult.Error(errorMsg)) }
-                resetScanStateAfterDelay()
-            }
+            onError = { msg -> updateStage(ScanResult.Error(msg)) }
         ) {
-            _uiState.update { it.copy(lastScannedCode = code) }
             validateQrUseCase(code).collect { result ->
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        scanStatus = result,
-                        isScanPending = when(result) {
-                            is ScanResult.Success -> false
-                            is ScanResult.Error,
-                            is ScanResult.FormatError -> false
-                            else -> currentState.isScanPending
-                        }
-                    )
-                }
-                if (result is ScanResult.Success ||
-                    result is ScanResult.Error ||
-                    result is ScanResult.FormatError) {
-                    resetScanStateAfterDelay()
+                if (result !is ScanResult.Loading) {
+                    delay(ScannerUIConstants.VALIDATION_DELAY)
+                    updateStage(result)
                 }
             }
         }
     }
 
-    private fun resetScanStateAfterDelay() {
+    private fun updateStage(result: ScanResult) {
+        _uiState.update { it.copy(
+            scanStatus = result,
+            isProcessing = false,
+            stage = ScannerStage.FEEDBACK
+        ) }
+
         launchSafe {
-            delay(2000)
-            _uiState.update {
-                it.copy(
-                    scanStatus = ScanResult.Idle,
-                    lastScannedCode = null,
-                    isProcessing = false,
-                    isScanPending = it.isScanning
-                )
-            }
+            // Auto-reset logic
+            delay(if (result is ScanResult.Success) 1500L else 2500L)
+            _uiState.update { it.copy(
+                scanStatus = ScanResult.Idle,
+                stage = ScannerStage.DETECTING,
+                isScanPending = true
+            ) }
         }
     }
 }

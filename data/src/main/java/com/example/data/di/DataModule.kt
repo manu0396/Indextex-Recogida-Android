@@ -37,7 +37,12 @@ val networkModule = module {
     // --- FIX: FORCE MOCK TO BYPASS 404 ---
     // TODO: Revert to 'if/else' logic when Server Prod is fixed
     single<RecogidasRepository> {
-        MockRecogidasRepository()
+        val isDebug = getProperty<Boolean>("IS_DEBUG_MODE", false)
+        if (isDebug) {
+            MockRecogidasRepository()
+        } else {
+            RecogidaRepositoryImpl(get(), get(), get(), get())
+        }
     }
 
     /* // OLD LOGIC (Disabled)

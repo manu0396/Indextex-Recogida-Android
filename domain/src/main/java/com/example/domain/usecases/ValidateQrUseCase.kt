@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 class ValidateQrUseCase(
     private val repository: RecogidasRepository
 ) {
-    private val inditexRegex = Regex("^INDITEX-[A-Z0-9]{6}$")
+    private val inditexRegex = Regex("^INDITEX_[A-Z0-9]{6}$")
     operator fun invoke(qr: String): Flow<ScanResult> = flow {
         emit(ScanResult.Loading)
         val sanitizedQr = qr.trim().uppercase()
