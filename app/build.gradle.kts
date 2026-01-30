@@ -6,6 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.pda_recogida_android"
+    defaultPublishConfig = "spainGoogleDebug"
+    tasks.whenTaskAdded {
+        if (name.contains("installSpainGoogleDebug")) {
+            group = "Execution"
+        }
+    }
 }
 
 dependencies {

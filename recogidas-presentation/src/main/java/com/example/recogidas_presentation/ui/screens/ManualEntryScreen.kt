@@ -26,8 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.example.recogidas_presentation.components.ValidationSuccessDialog
-import com.example.recogidas_presentation.components.ValidationErrorDialog
 import com.example.recogidas_presentation.R
 
 @OptIn(ExperimentalMaterial3Api::class)
