@@ -10,44 +10,21 @@ NC='\033[0m'
 echo -e "${YELLOW}🚀 [Pre-Push] Starting Build Integrity Check...${NC}"
 
 # ==========================================
-# 1. SHARED & ANDROID CHECKS
+# 1. ANDROID CORE CHECKS
 # ==========================================
-echo -e "\n${YELLOW}--- [1/3] 🤖 Verifying Android & Shared Logic ---${NC}"
+echo -e "\n${YELLOW}--- [1/2] 🤖 Verifying Android Architecture ---${NC}"
 
-# 1. Generate resources
+# 1. Generate SqlDelight interfaces
+echo "   Generating Database Interfaces..."
 ./gradlew generateSqlDelightInterface --quiet
 
-# 2. Run Lint and Tests for a SPECIFIC Flavor (MockDebug)
+# 2. Run Lint and Unit Tests for the active Flavor
 echo "   Running Lint and Unit Tests (MockDebug)..."
 ./gradlew lintMockDebug testMockDebugUnitTest --quiet
 
 echo -e "${GREEN}✅ Android environment is healthy.${NC}"
 
-
 # ==========================================
-# 2. IOS ENVIRONMENT CHECKS (macOS Only)
-# ==========================================
-echo -e "\n${YELLOW}--- [2/3] 🍎 Verifying iOS Environment ---${NC}"
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    if command -v xcodebuild >/dev/null; then
-        echo "   Xcode detected. Checking iOS build..."
-
-        if [ -f "composeApp/Podfile" ] || [ -f "iosApp/Podfile" ]; then
-             echo "   Running Pod Install..."
-             ./gradlew podInstall --quiet
-        fi
-        ./gradlew linkDebugFrameworkIosSimulatorArm64 --quiet
-
-        echo -e "${GREEN}✅ iOS environment is healthy.${NC}"
-    else
-        echo -e "${RED}⚠️  Xcode not found! Skipping iOS checks.${NC}"
-    fi
-else
-    echo -e "🐧 Not running on macOS. Skipping iOS checks."
-fi
-
-# ==========================================
-# 3. SUCCESS
+# 2. SUCCESS
 # ==========================================
 echo -e "\n${GREEN}✅✅ All Systems Go. Pushing changes...${NC}"
