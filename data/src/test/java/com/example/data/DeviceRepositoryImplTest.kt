@@ -27,7 +27,6 @@ class DeviceRepositoryImplTest {
 
         val repository = DeviceRepositoryImpl(context)
         val result = repository.registerDevice("12345")
-
-        assertTrue("Expected Result.Success, got $result", result is Result.Success)
+        assertTrue("Expected Result.Success, but was $result", result is Result.Success)
     }
 }
