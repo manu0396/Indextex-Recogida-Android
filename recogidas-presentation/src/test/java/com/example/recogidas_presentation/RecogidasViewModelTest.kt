@@ -36,7 +36,7 @@ class RecogidasViewModelTest {
         coEvery { syncUseCase(Unit) } returns Result.Success(Unit)
 
         viewModel.uiState.test {
-            awaitItem() // Consume initial state
+            awaitItem()
             viewModel.onIntent(RecogidasIntent.RefreshData)
             advanceUntilIdle()
 
