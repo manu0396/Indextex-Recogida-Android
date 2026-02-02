@@ -10,7 +10,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -24,7 +24,7 @@ class RecogidasViewModelTest {
     private val syncUseCase: SyncAuthorizedUserUseCase = mockk()
     private val validateQrUseCase: ValidateQrUseCase = mockk()
     private lateinit var viewModel: RecogidasViewModel
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setup() {
@@ -40,9 +40,7 @@ class RecogidasViewModelTest {
         coEvery { syncUseCase(Unit) } returns Result.Success(Unit)
 
         viewModel.uiState.test {
-            awaitItem()
             viewModel.onIntent(RecogidasIntent.RefreshData)
-            advanceUntilIdle()
             val finalState = expectMostRecentItem()
             assert(!finalState.isLoading)
             assert(finalState.error == null)
