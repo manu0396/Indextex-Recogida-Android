@@ -29,16 +29,14 @@ class RecogidasViewModelTest {
     }
 
     @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
+    fun tearDown() = Dispatchers.resetMain()
 
     @Test
     fun `when RefreshData intent is sent then state updates to success`() = runTest {
         coEvery { syncUseCase(Unit) } returns Result.Success(Unit)
 
         viewModel.uiState.test {
-            awaitItem()
+            awaitItem() // Consume initial state
             viewModel.onIntent(RecogidasIntent.RefreshData)
             advanceUntilIdle()
 

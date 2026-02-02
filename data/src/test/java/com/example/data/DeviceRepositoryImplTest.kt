@@ -20,7 +20,7 @@ class DeviceRepositoryImplTest {
     @Test
     fun `registerDevice should return success result`() = runTest {
         every { context.getSharedPreferences(any(), any()) } returns sharedPrefs
-        every { sharedPrefs.getString(any(), any()) } returns "mock-uuid"
+        every { sharedPrefs.getString(any(), any()) } returns "mock-id"
         every { sharedPrefs.edit() } returns editor
         every { editor.putString(any(), any()) } returns editor
         every { editor.apply() } just Runs

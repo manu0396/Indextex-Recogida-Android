@@ -21,7 +21,6 @@ class KoinModulesTest : KoinTest {
                 domainModule, presentationModule
             )
         }
-
         allModules.verify(
             extraTypes = listOf(
                 Context::class,
