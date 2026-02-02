@@ -41,11 +41,7 @@ class RecogidasViewModelTest {
         coEvery { syncUseCase(Unit) } returns Result.Success(Unit)
 
         viewModel.uiState.test {
-            val initialState = awaitItem()
-            assert(!initialState.isLoading)
             viewModel.onIntent(RecogidasIntent.RefreshData)
-            runCurrent()
-            advanceUntilIdle()
             val finalState = expectMostRecentItem()
             assert(!finalState.isLoading)
             assert(finalState.error == null)

@@ -1,7 +1,6 @@
 package com.example.data.di
 
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.example.data.BuildConfig
 import com.example.data.api.RecogidasApi
 import com.example.data.datasources.RecogidasLocalDataSource
 import com.example.data.datasources.RecogidasLocalDataSourceImpl
@@ -11,7 +10,7 @@ import com.example.data.db.RecogidaDatabase
 import com.example.data.mapper.RecogidaMapper
 import com.example.data.repository.DeviceRepositoryImpl
 import com.example.data.repository.MockRecogidasRepository
-import com.example.data.repository.RecogidaRepositoryImpl
+import com.example.data.repository.RecogidasRepositoryImpl
 import com.example.domain.repository.DeviceRepository
 import com.example.domain.repository.RecogidasRepository
 import org.koin.android.ext.koin.androidContext
@@ -38,7 +37,7 @@ val networkModule = module {
     single<DeviceRepository> { DeviceRepositoryImpl(androidContext()) }
 
     single<RecogidasRepository> {
-        RecogidaRepositoryImpl(get(), get(), get(), get())
+        RecogidasRepositoryImpl(get(), get(), get(), get())
     }
 
     single<RecogidaMapper> { RecogidaMapper() }
@@ -50,7 +49,7 @@ val networkModule = module {
         if (isDebug) {
             MockRecogidasRepository()
         } else {
-            RecogidaRepositoryImpl(get(), get(), get(), get())
+            RecogidasRepositoryImpl(get(), get(), get(), get())
         }
     }
 

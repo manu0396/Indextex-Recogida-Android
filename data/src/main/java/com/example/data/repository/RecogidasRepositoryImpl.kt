@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
-class RecogidaRepositoryImpl(
+class RecogidasRepositoryImpl(
     private val remoteDataSource: RecogidasRemoteDataSource,
     private val localDataSource: RecogidasLocalDataSource,
     private val mapper: RecogidaMapper,

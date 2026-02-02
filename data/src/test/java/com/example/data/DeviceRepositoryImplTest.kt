@@ -18,15 +18,14 @@ class DeviceRepositoryImplTest {
     private val editor: SharedPreferences.Editor = mockk()
 
     @Test
-    fun `registerDevice should return success result when no device id exists`() = runTest {
+    fun `registerDevice should return success result`() = runTest {
         every { context.getSharedPreferences(any(), any()) } returns sharedPrefs
         every { sharedPrefs.getString(any(), any()) } returns null
         every { sharedPrefs.edit() } returns editor
         every { editor.putString(any(), any()) } returns editor
         every { editor.apply() } just Runs
-
         val repository = DeviceRepositoryImpl(context)
         val result = repository.registerDevice("12345")
-        assertTrue("Result should be Success, but was $result", result is Result.Success)
+        assertTrue("Expected Success but got $result", result is Result.Success)
     }
 }
