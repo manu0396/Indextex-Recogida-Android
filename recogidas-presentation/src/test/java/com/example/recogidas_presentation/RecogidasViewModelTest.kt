@@ -10,7 +10,11 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -39,7 +43,6 @@ class RecogidasViewModelTest {
             awaitItem()
             viewModel.onIntent(RecogidasIntent.RefreshData)
             advanceUntilIdle()
-
             val finalState = expectMostRecentItem()
             assert(!finalState.isLoading)
             assert(finalState.error == null)
