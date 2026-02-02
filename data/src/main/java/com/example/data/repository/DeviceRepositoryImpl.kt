@@ -2,16 +2,30 @@ package com.example.data.repository
 
 import android.content.Context
 import android.os.Build
-import android.provider.Settings
+import androidx.core.content.edit
+import com.example.core_common.dispatchers.result.Result
+import com.example.core_common.exception.AppExceptions
 import com.example.domain.model.DeviceConfig
 import com.example.domain.repository.DeviceRepository
+import java.util.UUID
 
 class DeviceRepositoryImpl(
-    private val context: Context
+    private val context: Context,
 ) : DeviceRepository {
 
+    private val prefs by lazy {
+        context.getSharedPreferences("app_secure_prefs", Context.MODE_PRIVATE)
+    }
+
     override fun getDeviceId(): String {
-        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        val key = "secure_installation_id"
+        return prefs.getString(key, null) ?: synchronized(this) {
+            prefs.getString(key, null) ?: run {
+                val newId = UUID.randomUUID().toString()
+                prefs.edit { putString(key, newId) }
+                newId
+            }
+        }
     }
 
     override fun getDeviceName(): String {
@@ -30,9 +44,9 @@ class DeviceRepositoryImpl(
                 centerId = "ES_Center_01",
                 frontCameraActive = false
             )
-            Result.success(config)
+            Result.Success(config)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.Error(AppExceptions.from(e))
         }
     }
 }

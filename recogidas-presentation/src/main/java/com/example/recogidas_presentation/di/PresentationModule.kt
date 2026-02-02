@@ -1,7 +1,5 @@
 package com.example.recogidas_presentation.di
 
-import com.example.domain.usecases.SyncAuthorizedUserUseCase
-import com.example.domain.usecases.ValidateQrUseCase
 import com.example.recogidas_presentation.ui.analyzer.QrCodeAnalyzer
 import com.example.recogidas_presentation.viewmodel.RecogidasViewModel
 import com.example.recogidas_presentation.viewmodel.ScannerViewModel
@@ -9,12 +7,10 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val presentationModule = module {
-    factory { ValidateQrUseCase(repository = get()) }
-    factory { SyncAuthorizedUserUseCase(repository = get(), dispatchers = get()) }
     factory { (onQrDetected: (String) -> Unit) ->
         QrCodeAnalyzer(onCodeDetected = onQrDetected)
     }
-    factory { (onQrDetected: (String) -> Unit) ->
+    viewModel {
         RecogidasViewModel(
             validateQrUseCase = get(),
             syncUseCase = get()

@@ -9,9 +9,12 @@ import com.example.data.datasources.RecogidasRemoteDataSource
 import com.example.data.datasources.RecogidasRemoteDataSourceImpl
 import com.example.data.db.RecogidaDatabase
 import com.example.data.mapper.RecogidaMapper
+import com.example.data.repository.DeviceRepositoryImpl
 import com.example.data.repository.MockRecogidasRepository
 import com.example.data.repository.RecogidaRepositoryImpl
+import com.example.domain.repository.DeviceRepository
 import com.example.domain.repository.RecogidasRepository
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,6 +33,12 @@ val networkModule = module {
 
     single<RecogidasRemoteDataSource> {
         RecogidasRemoteDataSourceImpl(api = get())
+    }
+
+    single<DeviceRepository> { DeviceRepositoryImpl(androidContext()) }
+
+    single<RecogidasRepository> {
+        RecogidaRepositoryImpl(get(), get(), get(), get())
     }
 
     single<RecogidaMapper> { RecogidaMapper() }
