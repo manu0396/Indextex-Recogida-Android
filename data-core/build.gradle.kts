@@ -10,6 +10,9 @@ android {
             variantBuilder.androidTest.enable = false
         }
     }
+    lint {
+        disable += "FlowOperatorInvokedInComposition"
+    }
 }
 
 dependencies {

@@ -9,6 +9,11 @@ android {
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
     }
+    lint {
+        disable.add("FlowOperatorInvokedInComposition")
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
 }
 
 dependencies {

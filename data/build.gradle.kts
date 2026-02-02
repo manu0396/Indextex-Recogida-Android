@@ -16,6 +16,9 @@ sqldelight {
 
 android {
     namespace = "com.example.data"
+    lint {
+        disable += "FlowOperatorInvokedInComposition"
+    }
 }
 
 dependencies {

@@ -1,21 +1,32 @@
-package com.example.data_core
+package com.example.pda_recogida_android
 
-import com.example.data_core.di.networkModule
-import com.example.feature_recogidas_android.di.recogidasModule
+import android.content.Context
+import androidx.lifecycle.SavedStateHandle
+import com.example.core_common.di.coreCommonModule
+import com.example.data.di.networkModule
+import com.example.data_core.di.dataCoreModule
+import com.example.domain.di.domainModule
+import com.example.recogidas_presentation.di.presentationModule
 import org.junit.Test
-import org.koin.core.context.koinApplication
+import org.koin.dsl.module
 import org.koin.test.KoinTest
+import org.koin.test.verify.verify
 
 class KoinModulesTest : KoinTest {
-
     @Test
     fun checkAllModules() {
-        koinApplication {
-            modules(
-                networkModule,
-                networkModule,
-                recogidasModule
+        val allModules = module {
+            includes(
+                networkModule, dataCoreModule, coreCommonModule,
+                domainModule, presentationModule
             )
-        }.checkModules()
+        }
+
+        allModules.verify(
+            extraTypes = listOf(
+                Context::class,
+                SavedStateHandle::class
+            )
+        )
     }
 }

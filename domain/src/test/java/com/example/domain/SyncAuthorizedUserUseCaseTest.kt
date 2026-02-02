@@ -28,7 +28,7 @@ class SyncAuthorizedUserUseCaseTest {
     @Test
     fun `when sync is triggered then repository is called`() = runTest(testDispatcher) {
         coEvery { mockRepository.syncAuthorizedPersonnel() } returns Unit
-        useCase.invoke()
+        useCase.invoke(Unit)
         coVerify(exactly = 1) { mockRepository.syncAuthorizedPersonnel() }
     }
 }

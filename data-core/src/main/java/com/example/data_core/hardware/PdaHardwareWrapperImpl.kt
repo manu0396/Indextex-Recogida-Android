@@ -8,12 +8,13 @@ import android.os.Build
 import android.os.Vibrator
 import android.os.VibrationEffect
 import android.util.Log
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 class PdaHardwareWrapperImpl(
-    private val context: Context
+    private val context: Context,
 ) : PdaHardwareWrapper {
 
     private val TAG = "PdaHardwareWrapperImpl"
@@ -39,7 +40,7 @@ class PdaHardwareWrapperImpl(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(scannerReceiver, filter, Context.RECEIVER_EXPORTED)
         } else {
-            context.registerReceiver(scannerReceiver, filter)
+            ContextCompat.registerReceiver(context, scannerReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         }
     }
 
@@ -54,12 +55,7 @@ class PdaHardwareWrapperImpl(
     override fun triggerVibration(duration: Long) {
         val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (vibrator.hasVibrator()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(duration)
-            }
+            vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
         }
     }
 

@@ -102,7 +102,7 @@ class RecogidasViewModel(
                 _uiState.update { it.copy(error = message) }
             }
         ) {
-            syncUseCase()
+            syncUseCase(Unit)
         }
 
     private fun handleToggleLaser(enabled: Boolean) {
