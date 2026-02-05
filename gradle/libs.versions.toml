@@ -8,6 +8,8 @@ jvmTarget = "21"
 # Build Tools
 agp = "8.13.2"
 kotlin = "2.1.0"
+# 🟢 Added missing plugin version
+firebaseCrashlyticsPlugin = "3.0.2"
 
 # Core & Lifecycle
 coreKtx = "1.15.0"
@@ -38,6 +40,9 @@ composeBom = "2025.01.01"
 androidx-compose-adaptive = "1.0.0"
 material = "1.12.0"
 appcompat = "1.7.0"
+inditexUi = "3.4.0"
+googleServices = "4.4.0"
+datastore = "1.1.2"
 
 # Architecture & DI
 koin = "4.0.1"
@@ -55,6 +60,7 @@ robolectric = "4.12.1"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 # --- UI & Compose ---
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -68,6 +74,9 @@ androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adap
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+inditex-ui = { group = "com.inditex.dssdkand", name = "dssdkand", version.ref = "inditexUi" }
+kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 
 # --- Lifecycle & ViewModel ---
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
@@ -94,6 +103,7 @@ sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-dri
 sqldelight-coroutines = { group = "app.cash.sqldelight", name = "coroutines-extensions", version.ref = "sqldelight" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+
 # --- MLKit & Utils ---
 google-mlkit-barcode = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkit-barcode" }
 google-mlkit-vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "mlkit-common" }
@@ -136,3 +146,5 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }

@@ -1,4 +1,4 @@
-package com.example.inditex_recogida_android.ui.theme
+package com.example.pda_recogida_android.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

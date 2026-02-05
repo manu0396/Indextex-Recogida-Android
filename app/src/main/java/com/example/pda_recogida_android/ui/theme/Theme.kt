@@ -1,6 +1,5 @@
-package com.example.inditex_recogida_android.ui.theme
+package com.example.pda_recogida_android.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

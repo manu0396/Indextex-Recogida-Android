@@ -2,10 +2,20 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
     id("recogidas.android")
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
     namespace = "com.example.pda_recogida_android"
+    productFlavors {
+        getByName("spainPre") {
+            applicationId = "com.example.pda_recogida_android.pre"
+        }
+        getByName("spainPro") {
+            applicationId = "com.example.pda_recogida_android"
+        }
+    }
 }
 
 dependencies {
@@ -17,6 +27,7 @@ dependencies {
     implementation(project(":session"))
     implementation(project(":components"))
     implementation(project(":recogidas-presentation"))
+    implementation(project(":feature-settings"))
 
     // Tech Stack
     implementation(libs.koin.android)

@@ -7,7 +7,7 @@ android {
     namespace = "com.example.data_core"
     androidComponents {
         beforeVariants { variantBuilder ->
-            variantBuilder.androidTest.enable = false
+            variantBuilder.enableAndroidTest = false
         }
     }
     lint {
