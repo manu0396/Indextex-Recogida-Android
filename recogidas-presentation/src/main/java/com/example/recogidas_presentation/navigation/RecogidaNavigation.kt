@@ -16,7 +16,10 @@ const val KEY_MANUAL_CODE = "manual_code_result"
 
 private val TAG = "Navigation"
 
-fun NavGraphBuilder.recogidaGraph(navController: NavController) {
+fun NavGraphBuilder.recogidaGraph(
+    navController: NavController,
+    onSettingsClick: () -> Unit,
+) {
     composable(route = ROUTE_RECOGIDA_SCANNER) { backStackEntry ->
         val viewModel: ScannerViewModel = koinViewModel()
         val manualResult = backStackEntry.savedStateHandle.get<String>(KEY_MANUAL_CODE)
@@ -30,7 +33,7 @@ fun NavGraphBuilder.recogidaGraph(navController: NavController) {
 
         ScannerScreen(
             viewModel = viewModel,
-            onBack = { navController.popBackStack() }
+            onSettingsClick = onSettingsClick
         )
     }
 

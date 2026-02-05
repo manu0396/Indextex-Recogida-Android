@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material3.*
@@ -42,7 +43,7 @@ import com.example.recogidas_presentation.viewmodel.ScannerViewModel
 @Composable
 fun ScannerScreen(
     viewModel: ScannerViewModel,
-    onBack: (() -> Unit)? = null
+    onSettingsClick: (() -> Unit)
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -85,12 +86,10 @@ fun ScannerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.scanner_title)) },
-                navigationIcon = {
-                    onBack?.let {
-                        IconButton(onClick = it) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                        }
+                title = { Text("Recogida Scanner") },
+                actions = {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 }
             )

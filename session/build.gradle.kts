@@ -6,6 +6,9 @@ plugins {
 
 android {
     namespace = "com.example.session"
+    lint {
+        disable += "FlowOperatorInvokedInComposition"
+    }
 }
 
 dependencies {

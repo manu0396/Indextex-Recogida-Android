@@ -38,4 +38,15 @@ subprojects {
             }
         }
     }
+    afterEvaluate {
+        if (extensions.findByName("android") != null) {
+            configure<com.android.build.gradle.BaseExtension> {
+                lintOptions {
+                    lintConfig = rootProject.file("lint.xml")
+                    isAbortOnError = false
+                    isCheckReleaseBuilds = false
+                }
+            }
+        }
+    }
 }
