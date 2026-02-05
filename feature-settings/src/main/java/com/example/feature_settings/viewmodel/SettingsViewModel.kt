@@ -7,11 +7,14 @@ import com.example.domain.usecases.GetSessionInfoUseCase
 import com.example.domain.usecases.LogoutUseCase
 import com.example.feature_settings.model.SettingsUiEvent
 import com.example.feature_settings.model.SettingsUiState
+import com.example.feature_settings.model.SyncStatus
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class SettingsViewModel(
     private val getSessionInfoUseCase: GetSessionInfoUseCase,
@@ -28,8 +31,6 @@ class SettingsViewModel(
     private fun loadSettings() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-
-            // Executing UseCase (Pattern based on your SyncAuthorizedUserUseCase)
             when (val result = getSessionInfoUseCase.run(Unit)) {
                 is Result.Success -> {
                     val info = result.data
@@ -43,7 +44,6 @@ class SettingsViewModel(
                     }
                 }
                 is Result.Error -> {
-                    // Handle error (e.g., show generic info or retry)
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -58,13 +58,39 @@ class SettingsViewModel(
 
     fun onEvent(event: SettingsUiEvent) {
         when (event) {
-            SettingsUiEvent.OnBackClicked -> {
-                // Usually handled by UI/Navigation, but can emit a side-effect here
+            SettingsUiEvent.OnBackClicked -> { /* Handle navigation side-effect */
             }
             SettingsUiEvent.OnLogoutClicked -> logout()
-            SettingsUiEvent.OnThemeToggled -> {
-                // Toggle theme logic
+            SettingsUiEvent.OnThemeToggled -> { /* Toggle logic */
             }
+            SettingsUiEvent.OnSyncClicked -> triggerMockSync()
+        }
+    }
+
+    private fun triggerMockSync() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(syncStatus = SyncStatus.Loading) }
+
+            // 🟢 Simulate Network Latency
+            delay(2000)
+
+            // 🟢 Randomly Mock Success or Failure
+            if (Random.nextBoolean()) {
+                _uiState.update {
+                    it.copy(
+                        syncStatus = SyncStatus.Success("Sincronización finalizada"),
+                        lastSync = "05 Febrero 2026 11:35:00" // Update to "current" time
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(syncStatus = SyncStatus.Error("Error de conexión con el servidor"))
+                }
+            }
+
+            // Optional: Reset to Idle after showing the message for a few seconds
+            delay(3000)
+            _uiState.update { it.copy(syncStatus = SyncStatus.Idle) }
         }
     }
 
@@ -74,11 +100,12 @@ class SettingsViewModel(
 
             when (logoutUseCase.run(Unit)) {
                 is Result.Success -> {
-                    // Navigate to Login (Handled by UI observing state or specific side-effect)
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(
+                        isLoading = false,
+                        userEmail = null
+                    ) }
                 }
                 is Result.Error -> {
-                    // Handle logout failure
                     _uiState.update { it.copy(isLoading = false) }
                 }
                 is Result.Loading -> _uiState.update { it.copy(isLoading = true) }
