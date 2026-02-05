@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.components.SettingsCard
 import com.example.components.SettingsRow
+import com.example.feature_settings.model.SettingsEffect
 import com.example.feature_settings.model.SettingsUiEvent
 import com.example.feature_settings.model.SettingsUiState
 import com.example.feature_settings.model.SyncStatus
@@ -57,6 +58,14 @@ fun SettingsRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is SettingsEffect.NavigateBack -> onBackClick()
+            }
+        }
+    }
+
     LaunchedEffect(state.userEmail) {
         if (state.userEmail == null && !state.isLoading) {
             onLogoutSuccess()
@@ -64,7 +73,7 @@ fun SettingsRoute(
     }
     SettingsScreen(
         state = state,
-        onBackClick = onBackClick,
+        onBackClick = { viewModel.onEvent(SettingsUiEvent.OnBackClicked) },
         onEvent = { event ->
             if (event is SettingsUiEvent.OnLogoutClicked) {
                 onLogoutSuccess()

@@ -9,7 +9,8 @@ data class SettingsUiState(
     val mode: String = "Seguridad",
     val environment: String = "Preproduccion",
     val appVersion: String = "2.8.0",
-    val userEmail: String? = null
+    val userEmail: String? = null,
+    val isDarkMode: Boolean = false,
 )
 
 sealed interface SettingsUiEvent {
@@ -24,4 +25,7 @@ sealed interface SyncStatus {
     data object Loading : SyncStatus
     data class Success(val message: String) : SyncStatus
     data class Error(val message: String) : SyncStatus
+}
+sealed interface SettingsEffect {
+    data object NavigateBack : SettingsEffect
 }
