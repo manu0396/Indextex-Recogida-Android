@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.inditex.ui)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     // Tests

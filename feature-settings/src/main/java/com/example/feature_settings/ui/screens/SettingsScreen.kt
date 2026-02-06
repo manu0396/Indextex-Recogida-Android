@@ -1,7 +1,5 @@
 package com.example.feature_settings.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -12,48 +10,42 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Route
-import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.filled.WarningAmber
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.components.SettingsCard
-import com.example.components.SettingsRow
+import com.example.components.ZdsSettingsCell
 import com.example.feature_settings.model.SettingsEffect
 import com.example.feature_settings.model.SettingsUiEvent
 import com.example.feature_settings.model.SettingsUiState
-import com.example.feature_settings.model.SyncStatus
 import com.example.feature_settings.viewmodel.SettingsViewModel
+import com.inditex.dssdkand.accordion.ZDSAccordion
+import com.inditex.dssdkand.theme.ZDSTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsRoute(
     onBackClick: () -> Unit,
-    onLogoutSuccess: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -66,21 +58,13 @@ fun SettingsRoute(
         }
     }
 
-    LaunchedEffect(state.userEmail) {
-        if (state.userEmail == null && !state.isLoading) {
-            onLogoutSuccess()
-        }
+    ZDSTheme {
+        SettingsScreen(
+            state = state,
+            onBackClick = { viewModel.onEvent(SettingsUiEvent.OnBackClicked) },
+            onEvent = viewModel::onEvent
+        )
     }
-    SettingsScreen(
-        state = state,
-        onBackClick = { viewModel.onEvent(SettingsUiEvent.OnBackClicked) },
-        onEvent = { event ->
-            if (event is SettingsUiEvent.OnLogoutClicked) {
-                onLogoutSuccess()
-            }
-            viewModel.onEvent(event)
-        }
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,30 +75,42 @@ fun SettingsScreen(
     onEvent: (SettingsUiEvent) -> Unit
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(state.syncStatus) {
-        when (state.syncStatus) {
-            is SyncStatus.Success -> snackBarHostState.showSnackbar(state.syncStatus.message)
-            is SyncStatus.Error -> snackBarHostState.showSnackbar(
-                message = state.syncStatus.message,
-                duration = SnackbarDuration.Long
-            )
-            else -> {}
+    var configOpened by remember { mutableStateOf(true) }
+    var statusOpened by remember { mutableStateOf(true) }
+    val brandNavy = Color(0xFF003366)
+    val configuration = LocalConfiguration.current
+    val responsiveIconSize = remember(configuration.screenWidthDp) {
+        when {
+            configuration.screenWidthDp < 360 -> 32.dp
+            configuration.screenWidthDp < 600 -> 40.dp
+            else -> 56.dp
         }
     }
+
     Scaffold(
+        containerColor = Color.White,
         snackbarHost = { SnackbarHost(snackBarHostState) },
         topBar = {
-            TopAppBar(
-                title = { Text("Configuración", fontWeight = FontWeight.Bold) },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Configuración",
+                        color = Color.White,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 22.sp
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = brandNavy
                 )
             )
         }
@@ -122,70 +118,93 @@ fun SettingsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(paddingValues),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 48.dp)
         ) {
             item {
-                SettingsCard {
-                    SettingsRow(
-                        icon = Icons.Default.Sync,
-                        title = "Sincronización",
-                        subtitle = state.lastSync,
-                        onClick = {
-                            onEvent(SettingsUiEvent.OnSyncClicked)
-                        }
-                    )
-                }
+                ZdsSettingsCell(
+                    title = "Sincronización",
+                    subtitle = state.lastSync ?: "No sincronizado",
+                    iconResource = android.R.drawable.stat_notify_sync,
+                    iconSize = responsiveIconSize,
+                    iconTint = brandNavy,
+                    minHeight = 100.dp,
+                    onClick = { onEvent(SettingsUiEvent.OnSyncClicked) }
+                )
             }
 
             item {
-                SettingsCard {
+                ZDSAccordion(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 24.dp),
+                    title = "PARÁMETROS DE RUTA",
+                    opened = configOpened,
+                    onChange = { configOpened = it }
+                ) {
                     Column {
-                        SettingsRow(Icons.Default.Business, "Centro", state.center)
-                        HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp)
-                        SettingsRow(Icons.Default.Route, "Trayecto", state.trayecto)
-                        HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp)
-                        SettingsRow(Icons.Default.QrCodeScanner, "Modo", state.mode)
-                    }
-                }
-            }
-
-            item {
-                SettingsCard {
-                    Column {
-                        SettingsRow(Icons.Default.Layers, "Entorno", state.environment)
-                        HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp)
-                        SettingsRow(
-                            icon = Icons.Default.WarningAmber,
-                            title = "Errores en las autorizaciones",
-                            subtitle = "Sin conexión",
-                            iconColor = MaterialTheme.colorScheme.error
+                        ZdsSettingsCell(
+                            title = "Centro Logístico",
+                            subtitle = state.center,
+                            iconResource = android.R.drawable.ic_dialog_map,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
+                        ZdsSettingsCell(
+                            title = "Trayecto Actual",
+                            subtitle = state.trayecto,
+                            iconResource = android.R.drawable.ic_menu_compass,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
+                        ZdsSettingsCell(
+                            title = "Modo de Terminal",
+                            subtitle = state.mode,
+                            iconResource = android.R.drawable.ic_menu_camera,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
                         )
                     }
                 }
             }
 
             item {
-                Spacer(Modifier.height(8.dp))
-                Button(
-                    onClick = { onEvent(SettingsUiEvent.OnLogoutClicked) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ZDSAccordion(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 24.dp),
+                    title = "ESTADO DEL DISPOSITIVO",
+                    opened = statusOpened,
+                    onChange = { statusOpened = it }
                 ) {
-                    Text("Cerrar Sesión")
+                    Column {
+                        ZdsSettingsCell(
+                            title = "Entorno",
+                            subtitle = state.environment,
+                            iconResource = android.R.drawable.ic_menu_manage,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
+                        ZdsSettingsCell(
+                            title = "Conexión",
+                            subtitle = "Sincronizado / Operativo",
+                            iconResource = android.R.drawable.stat_sys_warning,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
+                    }
                 }
             }
 
             item {
-                Spacer(Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(64.dp))
                 Text(
-                    text = "Versión ${state.appVersion}",
+                    text = "VERSION: ${state.appVersion}",
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontWeight = FontWeight.Black,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }

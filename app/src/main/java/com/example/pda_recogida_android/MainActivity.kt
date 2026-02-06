@@ -27,22 +27,14 @@ class MainActivity : ComponentActivity() {
                         startDestination = ROUTE_RECOGIDA_SCANNER,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        // 1. Scanner Graph
                         recogidaGraph(
                             navController = navController,
                             onSettingsClick = {
                                 navController.navigate(SETTINGS_ROUTE)
                             }
                         )
-
-                        // 2. Settings Graph
                         settingsScreen(
-                            onBackClick = { navController.popBackStack() },
-                            onLogoutSuccess = {
-                                navController.navigate(ROUTE_RECOGIDA_SCANNER) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            }
+                            onBackClick = { navController.popBackStack() }
                         )
                     }
                 }
