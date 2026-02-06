@@ -1,6 +1,5 @@
 package com.example.feature_settings.ui.screens
 
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,136 +79,136 @@ fun SettingsScreen(
     var configOpened by remember { mutableStateOf(true) }
     var statusOpened by remember { mutableStateOf(true) }
     val brandNavy = Color(0xFF003366)
-
-    BoxWithConstraints {
-        val responsiveIconSize = remember(maxWidth) {
-            when {
-                maxWidth < 360.dp -> 32.dp
-                maxWidth < 600.dp -> 40.dp
-                else -> 56.dp
-            }
+    val windowInfo = LocalWindowInfo.current
+    val density = LocalDensity.current
+    val responsiveIconSize = remember(windowInfo.containerSize, density) {
+        val widthDp = with(density) { windowInfo.containerSize.width.toDp() }
+        when {
+            widthDp < 360.dp -> 32.dp
+            widthDp < 600.dp -> 40.dp
+            else -> 56.dp
         }
+    }
 
-        Scaffold(
-            containerColor = Color.White,
-            snackbarHost = { SnackbarHost(snackBarHostState) },
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = "Configuración",
-                            color = Color.White,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 22.sp
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = brandNavy
+    Scaffold(
+        containerColor = Color.White,
+        snackbarHost = { SnackbarHost(snackBarHostState) },
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Configuración",
+                        color = Color.White,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 22.sp
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = brandNavy
+                )
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 48.dp)
+        ) {
+            item {
+                ZdsSettingsCell(
+                    title = "Sincronización",
+                    subtitle = state.lastSync ?: "No sincronizado",
+                    iconResource = android.R.drawable.stat_notify_sync,
+                    iconSize = responsiveIconSize,
+                    iconTint = brandNavy,
+                    minHeight = 100.dp,
+                    onClick = { onEvent(SettingsUiEvent.OnSyncClicked) }
                 )
             }
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 48.dp)
-            ) {
-                item {
-                    ZdsSettingsCell(
-                        title = "Sincronización",
-                        subtitle = state.lastSync ?: "No sincronizado",
-                        iconResource = android.R.drawable.stat_notify_sync,
-                        iconSize = responsiveIconSize,
-                        iconTint = brandNavy,
-                        minHeight = 100.dp,
-                        onClick = { onEvent(SettingsUiEvent.OnSyncClicked) }
-                    )
-                }
 
-                item {
-                    ZDSAccordion(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, top = 24.dp),
-                        title = "PARÁMETROS DE RUTA",
-                        opened = configOpened,
-                        onChange = { configOpened = it }
-                    ) {
-                        Column {
-                            ZdsSettingsCell(
-                                title = "Centro Logístico",
-                                subtitle = state.center,
-                                iconResource = android.R.drawable.ic_dialog_map,
-                                iconSize = responsiveIconSize,
-                                iconTint = brandNavy
-                            )
-                            ZdsSettingsCell(
-                                title = "Trayecto Actual",
-                                subtitle = state.trayecto,
-                                iconResource = android.R.drawable.ic_menu_compass,
-                                iconSize = responsiveIconSize,
-                                iconTint = brandNavy
-                            )
-                            ZdsSettingsCell(
-                                title = "Modo de Terminal",
-                                subtitle = state.mode,
-                                iconResource = android.R.drawable.ic_menu_camera,
-                                iconSize = responsiveIconSize,
-                                iconTint = brandNavy
-                            )
-                        }
+            item {
+                ZDSAccordion(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 24.dp),
+                    title = "PARÁMETROS DE RUTA",
+                    opened = configOpened,
+                    onChange = { configOpened = it }
+                ) {
+                    Column {
+                        ZdsSettingsCell(
+                            title = "Centro Logístico",
+                            subtitle = state.center,
+                            iconResource = android.R.drawable.ic_dialog_map,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
+                        ZdsSettingsCell(
+                            title = "Trayecto Actual",
+                            subtitle = state.trayecto,
+                            iconResource = android.R.drawable.ic_menu_compass,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
+                        ZdsSettingsCell(
+                            title = "Modo de Terminal",
+                            subtitle = state.mode,
+                            iconResource = android.R.drawable.ic_menu_camera,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
                     }
                 }
+            }
 
-                item {
-                    ZDSAccordion(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, top = 24.dp),
-                        title = "ESTADO DEL DISPOSITIVO",
-                        opened = statusOpened,
-                        onChange = { statusOpened = it }
-                    ) {
-                        Column {
-                            ZdsSettingsCell(
-                                title = "Entorno",
-                                subtitle = state.environment,
-                                iconResource = android.R.drawable.ic_menu_manage,
-                                iconSize = responsiveIconSize,
-                                iconTint = brandNavy
-                            )
-                            ZdsSettingsCell(
-                                title = "Conexión",
-                                subtitle = "Sincronizado / Operativo",
-                                iconResource = android.R.drawable.stat_sys_warning,
-                                iconSize = responsiveIconSize,
-                                iconTint = brandNavy
-                            )
-                        }
+            item {
+                ZDSAccordion(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 24.dp),
+                    title = "ESTADO DEL DISPOSITIVO",
+                    opened = statusOpened,
+                    onChange = { statusOpened = it }
+                ) {
+                    Column {
+                        ZdsSettingsCell(
+                            title = "Entorno",
+                            subtitle = state.environment,
+                            iconResource = android.R.drawable.ic_menu_manage,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
+                        ZdsSettingsCell(
+                            title = "Conexión",
+                            subtitle = "Sincronizado / Operativo",
+                            iconResource = android.R.drawable.stat_sys_warning,
+                            iconSize = responsiveIconSize,
+                            iconTint = brandNavy
+                        )
                     }
                 }
+            }
 
-                item {
-                    Spacer(modifier = Modifier.height(64.dp))
-                    Text(
-                        text = "VERSION: ${state.appVersion}",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Black,
-                        color = Color.Black,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+            item {
+                Spacer(modifier = Modifier.height(64.dp))
+                Text(
+                    text = "VERSION: ${state.appVersion}",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Black,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }
